@@ -1,0 +1,10 @@
+C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\bin\Debug\Sah_Ai.exe.config
+C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\bin\Debug\Sah_Ai.exe
+C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\bin\Debug\Sah_Ai.pdb
+C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.csprojAssemblyReference.cache
+C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.Form1.resources
+C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.Properties.Resources.resources
+C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.csproj.GenerateResource.cache
+C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.csproj.CoreCompileInputs.cache
+C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.exe
+C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.pdb
