@@ -13,6 +13,12 @@ namespace Sah_Ai
         //private TableLayoutPanel chessBoard;
         public Button[,] buttons = new Button[8, 10];
         public Piece[,] pieces = new Piece[8, 10];
+        public Piece currectPieceToMove;
+        public int[] offsets;
+        public int last_x;
+        public int last_y;
+        public int new_x;
+        public int new_y;
 
         public static int SIZE { get; internal set; }
 
@@ -112,15 +118,66 @@ namespace Sah_Ai
                 {
                    
                     clickedButton.BackColor = Color.Yellow;
-                    int[] offsets = piece.getOffsets(square, this,buttons);
+                    offsets = piece.getOffsets(square, this,buttons);
+                    int row = square.Row;
+                    int col = square.Column;
+                    currectPieceToMove = pieces[row,col];
+                    last_x = row;
+                    last_y = col;
                     
                     
                 }
             }
+            if(clickedButton.BackColor == Color.Green)
+            {
+                int row = square.Row;
+                int col = square.Column;
+                new_x = row;
+                new_y = col;
+                Image image  = currectPieceToMove.Pieceimage;
+                ChessSquare selectedPiecePosition = currectPieceToMove.Position;// aici e ciudat
+                int r = selectedPiecePosition.Row;
+                int c = selectedPiecePosition.Column;
+                image = new Bitmap(image, clickedButton.Size);
+                clickedButton.BackgroundImageLayout = ImageLayout.Center;
+                clickedButton.BackgroundImage = image;
+                ChessSquare sq = new ChessSquare(new_x,new_y);
+                pieces[new_x,new_y] = pieces[r,c];
+                pieces[new_x, new_y].Position = sq;
+                //pieces[r,c].MyPosition = sq; // si mai ciudat, se schimba automat si currectPieceToMove
+                pieces[r,c] = null;
+                if ((r + c) % 2 == 0)
+                {
+                    buttons[r,c].BackColor = Color.White;
+                    buttons[r,c].BackgroundImage = null;
+                }
+                else
+                {
+                  buttons[r,c].BackColor = Color.FromArgb(160, 160, 160);
+                  buttons[r,c].BackgroundImage = null;
+                }
+                
+               for (int i=0; i<offsets.Length-1;i+=2)
+               {
+                  int rc = last_x + offsets[i];
+                  int cc = last_y + offsets[i+1];
+                    if ((rc + cc) % 2 == 0)
+                    {
+                    buttons[rc,cc].BackColor = Color.White;
+                    
+                    }
+                else
+                   {
+                    buttons[rc,cc].BackColor = Color.FromArgb(160, 160, 160);
+                  
+                   }
+
+               }
+
+            }
 
         }
         
-
         public void play()
         {
 

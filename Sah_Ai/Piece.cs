@@ -14,8 +14,19 @@ namespace Sah_Ai
         public enum PieceColor {White, Black};
         public PieceType Type { get; protected set; }
         public PieceColor color { get; private set; }
-        public ChessSquare Position { get; set; }
-        public Image Pieceimage { get;private set; }
+        public ChessSquare Position;
+        public Image Pieceimage { get; set; }
+        public ChessSquare MyPosition
+        {
+          get
+          {
+            return Position;
+          }
+          set
+            {
+            Position  = value;
+           }
+        }
 
         public Piece(Image image, PieceColor color, ChessSquare square)
         {

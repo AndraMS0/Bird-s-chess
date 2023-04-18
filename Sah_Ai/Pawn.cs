@@ -28,7 +28,7 @@ namespace Sah_Ai
             if (board.isValidSquare(square) && board.getPiece(square) == null)
             {
                 // Add offset for one square forward
-                rowOffsets.Add(direction);
+                rowOffsets.Add( direction);
                 colOffsets.Add(0);
 
                 // Color the button of the potential move
@@ -44,7 +44,8 @@ namespace Sah_Ai
                 if (board.isValidSquare(square) && board.getPiece(square) == null)
                 {
                     // Add offset for two squares forward
-                    rowOffsets.Add(2 * direction);
+                    rowOffsets.Add( 2 * direction);
+                  
                     colOffsets.Add(0);
 
                     // Color the button of the potential move
