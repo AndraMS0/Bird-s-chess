@@ -78,11 +78,20 @@ namespace Sah_Ai
                 offsets[i * 2] = rowOffsets[i];
                 offsets[i * 2 + 1] = colOffsets[i];
             }
+            int position_offset = 0;
+            int row;
+            int col;
             foreach (int offset in offsets)
             {
-                int row = position.Row + offset / 10;
-                int col = position.Column + offset % 10;
-
+                 if(position.Row + offset % 10 > position.Row && this.color == PieceColor.White)
+                    continue;
+                 if(position.Row + offset % 10 < position.Row && this.color == PieceColor.Black)
+                    continue;
+                 
+                 row = position.Row + offset % 10;
+                 col = position.Column + offset / 10;
+                
+ 
                 if (board.isValidSquare(new ChessSquare(row, col)) && board.getPiece(new ChessSquare(row, col)) == null)
                 {
                     // Set color to green for potential move
@@ -93,6 +102,7 @@ namespace Sah_Ai
                     // Set color to red for potential capture
                     buttons[row, col].BackColor = Color.Red;
                 }
+                position_offset++;
             }
 
 
