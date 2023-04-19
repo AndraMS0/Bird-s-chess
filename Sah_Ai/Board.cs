@@ -24,10 +24,10 @@ namespace Sah_Ai
 
         public Board(Form form)
         {
-            
-            for(int i=0; i < 8; i++)
+
+            for (int i = 0; i < 8; i++)
             {
-                for(int j = 0; j < 10; j++)
+                for (int j = 0; j < 10; j++)
                 {
                     Button button = new Button();
                     button.Click += new EventHandler(Button_Click);
@@ -41,30 +41,84 @@ namespace Sah_Ai
                     {
                         button.BackColor = Color.FromArgb(160, 160, 160);
                     }
-                    button.Location = new Point(j*70, i*70);
+                    button.Location = new Point(j * 70, i * 70);
                     buttons[i, j] = button;
-                  
+
                     form.Controls.Add(buttons[i, j]);
                 }
-                
-            }
-            string whitePawn = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\pion.png";
-            Image image = imageToButton(whitePawn, 6, 2);
-            ChessSquare chessSquare = new ChessSquare(6, 2);
-            Piece pawn = new Pawn(image, Piece.PieceColor.White,chessSquare);
-            pieces[6, 2] = pawn;
 
-            string blackPawn = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\pion2.png";
+            }
+			string whitePawn = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\pion.png";
+			Image image = imageToButton(whitePawn, 6, 2);
+			ChessSquare chessSquare = new ChessSquare(6, 2);
+			Piece pawn = new Pawn(image, Piece.PieceColor.White, chessSquare);
+			pieces[6, 2] = pawn;
+
+			string blackRook = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\tura2.png";
+            Image image6 = imageToButton(blackRook, 0, 0);
+            ChessSquare chessSquare6 = new ChessSquare(0, 0);
+            Piece blackRook2 = new Rook(image6, Piece.PieceColor.Black, chessSquare6);
+            pieces[0, 0] = blackRook2;
+
+            string whiteRook = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\tura.png";
+            Image image7 = imageToButton(whiteRook, 7, 0);
+            ChessSquare chessSquare7 = new ChessSquare(7, 0);
+            Piece whiteRook2= new Rook(image7, Piece.PieceColor.White, chessSquare7);
+            pieces[7, 0] = whiteRook2;
+
+            string whiteBishop = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\nebun.png";
+            Image image4 = imageToButton(whiteBishop, 7, 2);
+            ChessSquare chessSquare4 = new ChessSquare(7, 2);
+            Piece whiteBishop4 = new Bishop(image4, Piece.PieceColor.White, chessSquare4);
+            pieces[7, 2] = whiteBishop4;
+
+            string blackBishop = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\nebun2.png";
+            Image image5 = imageToButton(blackBishop, 0, 2);
+            ChessSquare chessSquare5 = new ChessSquare(0, 2);
+            Piece blackBishop2 = new Bishop(image5, Piece.PieceColor.Black, chessSquare5);
+            pieces[0, 2] = blackBishop2;
+
+            string blackPawn = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\pion2.png";
             Image image2 = imageToButton(blackPawn, 1, 1);
             ChessSquare chessSquare2 = new ChessSquare(1, 1);
-            Piece pawn2 = new Pawn(image2, Piece.PieceColor.Black,chessSquare2);
+            Piece pawn2 = new Pawn(image2, Piece.PieceColor.Black, chessSquare2);
             pieces[1, 1] = pawn2;
 
-            
-            Image image3 = imageToButton(blackPawn, 1, 3);
-            ChessSquare chessSquare3 = new ChessSquare(1, 3);
-            Piece pawn3 = new Pawn(image3, Piece.PieceColor.Black,chessSquare3);
-            pieces[1, 3] = pawn3;
+
+            Image image3 = imageToButton(blackPawn, 2, 1);
+            ChessSquare chessSquare3 = new ChessSquare(2, 1);
+            Piece pawn3 = new Pawn(image3, Piece.PieceColor.Black, chessSquare3);
+            pieces[2, 1] = pawn3;
+        }
+        public void refreshBoard(int row, int col){
+             if ((row + col) % 2 == 0)
+                {
+                    buttons[row,col].BackColor = Color.White;
+                    buttons[row,col].BackgroundImage = null;
+                }
+                else
+                {
+                  buttons[row,col].BackColor = Color.FromArgb(160, 160, 160);
+                  buttons[row,col].BackgroundImage = null;
+                }
+                
+               for (int i=0; i<offsets.Length-1;i+=2)
+               {
+                  int last_row = last_x + offsets[i];
+                  int last_col = last_y + offsets[i+1];
+                    if ((last_row + last_col) % 2 == 0)
+                    {
+                    buttons[last_row, last_col].BackColor = Color.White;
+                    
+                    }
+                else
+                   {
+                    buttons[last_row, last_col].BackColor = Color.FromArgb(160, 160, 160);
+                  
+                   }
+
+               }
+
         }
         public bool isValidSquare(ChessSquare square)
         {
@@ -124,10 +178,10 @@ namespace Sah_Ai
             if (square != null)
             {
                 Piece piece = getPiece(square);
-             
-                if (piece != null && piece.color == Piece.PieceColor.White)
+                
+                if (piece != null && piece.color == Piece.PieceColor.White )
                 {
-                   
+                    
                     clickedButton.BackColor = Color.Yellow;
                     offsets = piece.getOffsets(square, this,buttons);
                     int row = square.Row;
@@ -135,7 +189,6 @@ namespace Sah_Ai
                     currectPieceToMove = pieces[row,col];
                     last_x = row;
                     last_y = col;
-                    
                     
                 }
             }
@@ -155,81 +208,25 @@ namespace Sah_Ai
                 ChessSquare sq = new ChessSquare(new_x,new_y);
                 pieces[new_x,new_y] = pieces[r,c];
                 pieces[new_x, new_y].Position = sq;
-                //pieces[r,c].MyPosition = sq; // si mai ciudat, se schimba automat si currectPieceToMove
                 pieces[r,c] = null;
-                if ((r + c) % 2 == 0)
-                {
-                    buttons[r,c].BackColor = Color.White;
-                    buttons[r,c].BackgroundImage = null;
-                }
-                else
-                {
-                  buttons[r,c].BackColor = Color.FromArgb(160, 160, 160);
-                  buttons[r,c].BackgroundImage = null;
-                }
-                
-               for (int i=0; i<offsets.Length-1;i+=2)
-               {
-                  int rc = last_x + offsets[i];
-                  int cc = last_y + offsets[i+1];
-                    if ((rc + cc) % 2 == 0)
-                    {
-                    buttons[rc,cc].BackColor = Color.White;
-                    
-                    }
-                else
-                   {
-                    buttons[rc,cc].BackColor = Color.FromArgb(160, 160, 160);
-                  
-                   }
-
-               }
+                refreshBoard(r, c);
+             
 
             }
             if(clickedButton.BackColor == Color.Red)
             {
                 int row = square.Row;
                 int col = square.Column;
-                pieces[row,col] = null;
                 pieces[row,col] = pieces[last_x, last_y];
                 pieces[last_x, last_y] = null;
                 ChessSquare sq = new ChessSquare(row,col);
                 pieces[row,col].Position = sq;
-
                 buttons[row,col].BackgroundImage = null;
                 Image image  = currectPieceToMove.Pieceimage;
                 image = new Bitmap(image, clickedButton.Size);
                 clickedButton.BackgroundImageLayout = ImageLayout.Center;
                 clickedButton.BackgroundImage = image;
-                //ChessSquare sq = new ChessSquare(row,col);
-                if ((last_x + last_y) % 2 == 0)
-                {
-                    buttons[last_x,last_y].BackColor = Color.White;
-                    buttons[last_x,last_y].BackgroundImage = null;
-                }
-                else
-                {
-                  buttons[last_x,last_y].BackColor = Color.FromArgb(160, 160, 160);
-                  buttons[last_x,last_y].BackgroundImage = null;
-                }
-                for (int i=0; i<offsets.Length-1;i+=2)
-                {
-                  int rc = last_x + offsets[i];
-                  int cc = last_y + offsets[i+1];
-                    if ((rc + cc) % 2 == 0)
-                    {
-                    buttons[rc,cc].BackColor = Color.White;
-                    
-                    }
-                else
-                   {
-                    buttons[rc,cc].BackColor = Color.FromArgb(160, 160, 160);
-                  
-                   }
-
-                }
-
-
+                refreshBoard(last_x, last_y);       
             }
 
         }
