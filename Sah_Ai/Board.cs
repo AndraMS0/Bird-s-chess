@@ -15,10 +15,12 @@ namespace Sah_Ai
         public Piece[,] pieces = new Piece[8, 10];
         public Piece currectPieceToMove;
         public int[] offsets;
+        public Dictionary<Button, int[]> buttonOfssetsCorrelation = new Dictionary<Button, int[]>();
         public int last_x;
         public int last_y;
         public int new_x;
         public int new_y;
+        public Queue<ChessSquare> yellow_buttons = new Queue<ChessSquare>();
 
         public static int SIZE { get; internal set; }
 
@@ -48,37 +50,37 @@ namespace Sah_Ai
                 }
 
             }
-			string whitePawn = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\pion.png";
+			string whitePawn = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\pion.png";
 			Image image = imageToButton(whitePawn, 6, 2);
 			ChessSquare chessSquare = new ChessSquare(6, 2);
 			Piece pawn = new Pawn(image, Piece.PieceColor.White, chessSquare);
 			pieces[6, 2] = pawn;
 
-			string blackRook = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\tura2.png";
+			string blackRook = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\tura2.png";
             Image image6 = imageToButton(blackRook, 0, 0);
             ChessSquare chessSquare6 = new ChessSquare(0, 0);
             Piece blackRook2 = new Rook(image6, Piece.PieceColor.Black, chessSquare6);
             pieces[0, 0] = blackRook2;
 
-            string whiteRook = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\tura.png";
+            string whiteRook = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\tura.png";
             Image image7 = imageToButton(whiteRook, 7, 0);
             ChessSquare chessSquare7 = new ChessSquare(7, 0);
             Piece whiteRook2= new Rook(image7, Piece.PieceColor.White, chessSquare7);
             pieces[7, 0] = whiteRook2;
 
-            string whiteBishop = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\nebun.png";
+            string whiteBishop = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\nebun.png";
             Image image4 = imageToButton(whiteBishop, 7, 2);
             ChessSquare chessSquare4 = new ChessSquare(7, 2);
             Piece whiteBishop4 = new Bishop(image4, Piece.PieceColor.White, chessSquare4);
             pieces[7, 2] = whiteBishop4;
 
-            string blackBishop = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\nebun2.png";
+            string blackBishop = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\nebun2.png";
             Image image5 = imageToButton(blackBishop, 0, 2);
             ChessSquare chessSquare5 = new ChessSquare(0, 2);
             Piece blackBishop2 = new Bishop(image5, Piece.PieceColor.Black, chessSquare5);
             pieces[0, 2] = blackBishop2;
 
-            string blackPawn = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\pion2.png";
+            string blackPawn = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\pion2.png";
             Image image2 = imageToButton(blackPawn, 1, 1);
             ChessSquare chessSquare2 = new ChessSquare(1, 1);
             Piece pawn2 = new Pawn(image2, Piece.PieceColor.Black, chessSquare2);
@@ -102,7 +104,9 @@ namespace Sah_Ai
                   buttons[row,col].BackgroundImage = null;
                 }
                 
-               for (int i=0; i<offsets.Length-1;i+=2)
+               for (int i=0; i<offsets.Length-1;i+=2) // aici ar trebui dat
+                                                      // offsets si last_x si last_y in functie
+                                                      // si apelat corecpunzator pt fiecare caz
                {
                   int last_row = last_x + offsets[i];
                   int last_col = last_y + offsets[i+1];
@@ -168,13 +172,52 @@ namespace Sah_Ai
 
             return null;
         }
-        
+        private void clear_old_selection()
+        {
+            while(yellow_buttons.Count > 1)
+            {
+                ChessSquare chessSq = yellow_buttons.Peek();
 
+                if ((chessSq.Row + chessSq.Column) % 2 == 0)
+                {
+                    buttons[chessSq.Row,chessSq.Column].BackColor = Color.White;
+                    
+                }
+                else
+                {
+                  buttons[chessSq.Row,chessSq.Column].BackColor = Color.FromArgb(160, 160, 160);
+                  
+                }
+                int[] current_offsets;
+                if (buttonOfssetsCorrelation.TryGetValue(buttons[chessSq.Row,chessSq.Column], out current_offsets)) { 
+                for (int i=0; i<current_offsets.Length-1;i+=2)
+                {
+                  int last_r = chessSq.Row + current_offsets[i];
+                  int last_c = chessSq.Column + current_offsets[i+1];
+                    if ((last_r + last_c) % 2 == 0)
+                    {
+                    buttons[last_r, last_c].BackColor = Color.White;
+                    
+                    }
+                    else
+                    {
+                    buttons[last_r, last_c].BackColor = Color.FromArgb(160, 160, 160);
+                  
+                    }
+
+                }
+                }
+                yellow_buttons.Dequeue();
+
+            }
+        }
+ 
         private void Button_Click(object sender, EventArgs e)
         {
             Button clickedButton = (Button)sender;
             
             ChessSquare square = getSquare(clickedButton);
+
             if (square != null)
             {
                 Piece piece = getPiece(square);
@@ -183,7 +226,12 @@ namespace Sah_Ai
                 {
                     
                     clickedButton.BackColor = Color.Yellow;
+                    yellow_buttons.Enqueue(square);
+                    if(yellow_buttons.Count > 1)
+                        clear_old_selection();
                     offsets = piece.getOffsets(square, this,buttons);
+                    if (!buttonOfssetsCorrelation.ContainsKey(buttons[square.Row,square.Column]))
+                        buttonOfssetsCorrelation.Add(buttons[square.Row,square.Column],offsets);
                     int row = square.Row;
                     int col = square.Column;
                     currectPieceToMove = pieces[row,col];
@@ -192,6 +240,7 @@ namespace Sah_Ai
                     
                 }
             }
+         
             if(clickedButton.BackColor == Color.Green)
             {
                 int row = square.Row;

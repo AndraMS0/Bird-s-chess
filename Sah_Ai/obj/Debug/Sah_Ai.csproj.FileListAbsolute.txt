@@ -1,0 +1,11 @@
+C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\bin\Debug\Sah_Ai.exe.config
+C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\bin\Debug\Sah_Ai.exe
+C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\bin\Debug\Sah_Ai.pdb
+C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.csproj.AssemblyReference.cache
+C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.csproj.SuggestedBindingRedirects.cache
+C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.Form1.resources
+C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.Properties.Resources.resources
+C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.csproj.GenerateResource.cache
+C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.csproj.CoreCompileInputs.cache
+C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.exe
+C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\obj\Debug\Sah_Ai.pdb
