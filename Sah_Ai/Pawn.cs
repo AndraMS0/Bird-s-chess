@@ -10,7 +10,7 @@ namespace Sah_Ai
 {
     public class Pawn : Piece
     {
-        public Pawn(Image image, PieceColor color, ChessSquare square):base(image,color, square)
+        public Pawn(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
         {
             this.Type = PieceType.Pawn;
         }
@@ -28,13 +28,14 @@ namespace Sah_Ai
             if (board.isValidSquare(square) && board.getPiece(square) == null)
             {
                 // Add offset for one square forward
-                rowOffsets.Add( direction);
+                rowOffsets.Add(direction);
                 colOffsets.Add(0);
 
                 // Color the button of the potential move
-                Button button = board.buttons[square.Row, square.Column];
+                Button[,] copyButtons = board.MyButtons;
+                Button button = copyButtons[square.Row, square.Column];
                 button.BackColor = Color.Green;
-                
+
             }
 
             // Check if pawn can move two squares forward
@@ -44,12 +45,13 @@ namespace Sah_Ai
                 if (board.isValidSquare(square) && board.getPiece(square) == null)
                 {
                     // Add offset for two squares forward
-                    rowOffsets.Add( 2 * direction);
-                  
+                    rowOffsets.Add(2 * direction);
+
                     colOffsets.Add(0);
 
                     // Color the button of the potential move
-                    Button button = board.buttons[square.Row, square.Column];
+                    Button[,] copyButtons = board.MyButtons;
+                    Button button = copyButtons[square.Row, square.Column];
                     button.BackColor = Color.Green;
                 }
             }
@@ -66,7 +68,8 @@ namespace Sah_Ai
                     colOffsets.Add(offset);
 
                     // Color the button of the potential move
-                    Button button = board.buttons[square.Row, square.Column];
+                    Button[,] copyButtons = board.MyButtons;
+                    Button button = copyButtons[square.Row, square.Column];
                     button.BackColor = Color.Red;
                 }
             }
@@ -83,29 +86,20 @@ namespace Sah_Ai
             int col;
             foreach (int offset in offsets)
             {
-                 if(position.Row + offset % 10 > position.Row && this.color == PieceColor.White)
+                if (position.Row + offset % 10 > position.Row && this.color == PieceColor.White)
                     continue;
-                 if(position.Row + offset % 10 < position.Row && this.color == PieceColor.Black)
+                if (position.Row + offset % 10 < position.Row && this.color == PieceColor.Black)
                     continue;
-                 
-                 row = position.Row + offset % 10;
-                 col = position.Column + offset / 10;
-                
- 
+
+                row = position.Row + offset % 10;
+                col = position.Column + offset / 10;
                 if (board.isValidSquare(new ChessSquare(row, col)) && board.getPiece(new ChessSquare(row, col)) == null)
                 {
                     // Set color to green for potential move
                     buttons[row, col].BackColor = Color.Green;
                 }
-                else if (board.isValidSquare(new ChessSquare(row, col)) && board.getPiece(new ChessSquare(row, col)).color != this.color)
-                {
-                    // Set color to red for potential capture
-                    buttons[row, col].BackColor = Color.Red;
-                }
                 position_offset++;
             }
-
-
             return offsets;
         }
 

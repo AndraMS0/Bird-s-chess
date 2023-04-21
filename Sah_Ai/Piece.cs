@@ -10,22 +10,22 @@ namespace Sah_Ai
 {
     public abstract class Piece
     {
-        public enum PieceType { King, Queen, Bishop, Knight, Rook, Pawn , Guard, Equery};
-        public enum PieceColor {White, Black};
+        public enum PieceType { King, Queen, Bishop, Knight, Rook, Pawn, Guard, Equery };
+        public enum PieceColor { White, Black };
         public PieceType Type { get; protected set; }
         public PieceColor color { get; private set; }
         public ChessSquare Position;
         public Image Pieceimage { get; set; }
         public ChessSquare MyPosition
         {
-          get
-          {
-            return Position;
-          }
-          set
+            get
             {
-            Position  = value;
-           }
+                return Position;
+            }
+            set
+            {
+                Position = value;
+            }
         }
 
         public Piece(Image image, PieceColor color, ChessSquare square)
@@ -35,6 +35,6 @@ namespace Sah_Ai
             this.Position = square;
         }
         public abstract int[] getOffsets(ChessSquare position, Board board, Button[,] buttons);
-        
+
     }
 }
