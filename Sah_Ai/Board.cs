@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -23,7 +24,46 @@ namespace Sah_Ai
         public Queue<ChessSquare> yellow_buttons = new Queue<ChessSquare>();
 
         public static int SIZE { get; internal set; }
+        public void CreatePiece(Piece.PieceType type, Piece.PieceColor color, int row, int col, string imagePath)
+        {
+            Image image = imageToButton(imagePath, row, col);
+            ChessSquare chessSquare = new ChessSquare(row, col);
 
+            Piece piece = null;
+
+            switch (type)
+            {
+                case Piece.PieceType.Pawn:
+                    piece = new Pawn(image, color, chessSquare);
+                    break;
+                case Piece.PieceType.Knight:
+                    piece = new Knight(image, color, chessSquare);
+                    break;
+                case Piece.PieceType.Bishop:
+                    piece = new Bishop(image, color, chessSquare);
+                    break;
+                case Piece.PieceType.Rook:
+                    piece = new Rook(image, color, chessSquare);
+                    break;
+                case Piece.PieceType.Queen:
+                    piece = new Queen(image, color, chessSquare);
+                    break;
+                case Piece.PieceType.King:  
+                      piece = new King(image, color, chessSquare);
+                    break;
+                case Piece.PieceType.Guard:
+                    piece = new Guard(image, color, chessSquare);
+                    break;
+                case Piece.PieceType.Equery:
+                    piece = new Equery(image, color, chessSquare);
+                    break;
+            }
+
+            if (piece != null)
+            {
+                pieces[row, col] = piece;
+            }
+        }
         public Board(Form form)
         {
 
@@ -50,47 +90,60 @@ namespace Sah_Ai
                 }
 
             }
-			string whitePawn = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\pion.png";
-			Image image = imageToButton(whitePawn, 6, 2);
-			ChessSquare chessSquare = new ChessSquare(6, 2);
-			Piece pawn = new Pawn(image, Piece.PieceColor.White, chessSquare);
-			pieces[6, 2] = pawn;
-
-			string blackRook = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\tura2.png";
-            Image image6 = imageToButton(blackRook, 0, 0);
-            ChessSquare chessSquare6 = new ChessSquare(0, 0);
-            Piece blackRook2 = new Rook(image6, Piece.PieceColor.Black, chessSquare6);
-            pieces[0, 0] = blackRook2;
-
-            string whiteRook = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\tura.png";
+            // O SA TRECEM AICI CALEA CA VAD CA NU VREA ALTCUMVA
+            String folderpath = @"C:\Facultate_an_3\INTELIGENTA ARTIFICIALA\Proiect_sah_bun\Bird-s-chess\Sah_Ai\Images\";
+            // INITIALIZARE PIESE ALBE
+            //PAWN
+            for (int i = 0; i < 10; i++)
+            {
+                CreatePiece(Piece.PieceType.Pawn, Piece.PieceColor.White, 6, i, folderpath+ "pion.png");
+            }
+            //BISHOP
+			CreatePiece(Piece.PieceType.Bishop, Piece.PieceColor.White, 7, 2, folderpath + "nebun.png");
+			CreatePiece(Piece.PieceType.Bishop, Piece.PieceColor.White, 7, 7, folderpath + "nebun.png");
+            //ROOK
+			CreatePiece(Piece.PieceType.Rook, Piece.PieceColor.White, 7, 0, folderpath+ "tura.png");
+			CreatePiece(Piece.PieceType.Rook, Piece.PieceColor.White, 7, 9, folderpath+ "tura.png");
+            //KNIGHT
+            CreatePiece(Piece.PieceType.Knight, Piece.PieceColor.White, 7, 1, folderpath + "cal.png");
+            CreatePiece(Piece.PieceType.Knight, Piece.PieceColor.White, 7, 8, folderpath+ "cal.png");
+            //QUEEN
+            CreatePiece(Piece.PieceType.Queen, Piece.PieceColor.White, 7, 4, folderpath + "regina.png");
+            //KING
+            CreatePiece(Piece.PieceType.King, Piece.PieceColor.White, 7, 5, folderpath + "rege.png");
+            //GUARD
+            CreatePiece(Piece.PieceType.Guard, Piece.PieceColor.White, 7, 3, folderpath + "guard.png");
+            //EQUERY
+            CreatePiece(Piece.PieceType.Equery, Piece.PieceColor.White, 7, 6, folderpath + "equery.png");
+            // INITIALIZARE PIESE NEGRE
+            //PAWN
+            for (int i = 0; i < 10; i++)
+            {
+                CreatePiece(Piece.PieceType.Pawn, Piece.PieceColor.Black, 1, i, folderpath + "pion2.png");
+            }
+            //BISHOP
+            CreatePiece(Piece.PieceType.Bishop, Piece.PieceColor.Black, 0, 2, folderpath + "nebun2.png");
+            CreatePiece(Piece.PieceType.Bishop, Piece.PieceColor.Black, 0, 7, folderpath + "nebun2.png");
+            //ROOK
+            CreatePiece(Piece.PieceType.Rook, Piece.PieceColor.Black, 0, 0, folderpath + "tura2.png");
+            CreatePiece(Piece.PieceType.Rook, Piece.PieceColor.Black, 0, 9, folderpath + "tura2.png");
+            //KNIGHT
+            CreatePiece(Piece.PieceType.Knight, Piece.PieceColor.Black, 0, 1, folderpath + "cal2.png");
+            CreatePiece(Piece.PieceType.Knight, Piece.PieceColor.Black, 0, 8, folderpath + "cal2.png");
+            //QUEEN
+            CreatePiece(Piece.PieceType.Queen, Piece.PieceColor.Black, 0, 4, folderpath + "regina2.png");
+            //KING
+            CreatePiece(Piece.PieceType.King, Piece.PieceColor.Black, 0, 5, folderpath + "rege2.png");
+            //GUARD
+            CreatePiece(Piece.PieceType.Guard, Piece.PieceColor.Black, 0, 3, folderpath + "guard2.png");
+            //EQUERY
+            CreatePiece(Piece.PieceType.Equery, Piece.PieceColor.Black, 0, 6, folderpath + "equery2.png");
+            //AM LASAT SI INITIALIZAREA VECHE IN CAZ DE CEVA
+            /*string whiteRook = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\tura.png";
             Image image7 = imageToButton(whiteRook, 7, 0);
             ChessSquare chessSquare7 = new ChessSquare(7, 0);
-            Piece whiteRook2= new Rook(image7, Piece.PieceColor.White, chessSquare7);
-            pieces[7, 0] = whiteRook2;
-
-            string whiteBishop = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\nebun.png";
-            Image image4 = imageToButton(whiteBishop, 7, 2);
-            ChessSquare chessSquare4 = new ChessSquare(7, 2);
-            Piece whiteBishop4 = new Bishop(image4, Piece.PieceColor.White, chessSquare4);
-            pieces[7, 2] = whiteBishop4;
-
-            string blackBishop = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\nebun2.png";
-            Image image5 = imageToButton(blackBishop, 0, 2);
-            ChessSquare chessSquare5 = new ChessSquare(0, 2);
-            Piece blackBishop2 = new Bishop(image5, Piece.PieceColor.Black, chessSquare5);
-            pieces[0, 2] = blackBishop2;
-
-            string blackPawn = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\pion2.png";
-            Image image2 = imageToButton(blackPawn, 1, 1);
-            ChessSquare chessSquare2 = new ChessSquare(1, 1);
-            Piece pawn2 = new Pawn(image2, Piece.PieceColor.Black, chessSquare2);
-            pieces[1, 1] = pawn2;
-
-
-            Image image3 = imageToButton(blackPawn, 2, 1);
-            ChessSquare chessSquare3 = new ChessSquare(2, 1);
-            Piece pawn3 = new Pawn(image3, Piece.PieceColor.Black, chessSquare3);
-            pieces[2, 1] = pawn3;
+            Piece whiteRook2 = new Rook(image7, Piece.PieceColor.White, chessSquare7);
+            pieces[7, 0] = whiteRook2;*/
         }
         public void refreshBoard(int row, int col, int[] offset_array){
              if ((row + col) % 2 == 0)
@@ -222,7 +275,7 @@ namespace Sah_Ai
             {
                 Piece piece = getPiece(square);
                 
-                if (piece != null && piece.color == Piece.PieceColor.White )
+                if (piece != null && piece.color == Piece.PieceColor.Black)
                 {
                     
                     clickedButton.BackColor = Color.Yellow;

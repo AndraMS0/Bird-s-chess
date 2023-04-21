@@ -10,7 +10,7 @@ namespace Sah_Ai
 {
     public abstract class Piece
     {
-        public enum PieceType { King, Queen, Bishop, Knight, Rook, Pawn };
+        public enum PieceType { King, Queen, Bishop, Knight, Rook, Pawn , Guard, Equery};
         public enum PieceColor {White, Black};
         public PieceType Type { get; protected set; }
         public PieceColor color { get; private set; }
