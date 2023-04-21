@@ -92,24 +92,22 @@ namespace Sah_Ai
             Piece pawn3 = new Pawn(image3, Piece.PieceColor.Black, chessSquare3);
             pieces[2, 1] = pawn3;
         }
-        public void refreshBoard(int row, int col){
+        public void refreshBoard(int row, int col, int[] offset_array){
              if ((row + col) % 2 == 0)
                 {
                     buttons[row,col].BackColor = Color.White;
                     buttons[row,col].BackgroundImage = null;
-                }
-                else
-                {
+             }
+             else
+             {
                   buttons[row,col].BackColor = Color.FromArgb(160, 160, 160);
                   buttons[row,col].BackgroundImage = null;
-                }
+             }
                 
-               for (int i=0; i<offsets.Length-1;i+=2) // aici ar trebui dat
-                                                      // offsets si last_x si last_y in functie
-                                                      // si apelat corecpunzator pt fiecare caz
+               for (int i=0; i<offset_array.Length-1;i+=2) 
                {
-                  int last_row = last_x + offsets[i];
-                  int last_col = last_y + offsets[i+1];
+                  int last_row = row + offsets[i];
+                  int last_col = col + offsets[i+1];
                     if ((last_row + last_col) % 2 == 0)
                     {
                     buttons[last_row, last_col].BackColor = Color.White;
@@ -184,12 +182,13 @@ namespace Sah_Ai
                     
                 }
                 else
-                {
+               {
                   buttons[chessSq.Row,chessSq.Column].BackColor = Color.FromArgb(160, 160, 160);
                   
                 }
                 int[] current_offsets;
                 if (buttonOfssetsCorrelation.TryGetValue(buttons[chessSq.Row,chessSq.Column], out current_offsets)) { 
+                   
                 for (int i=0; i<current_offsets.Length-1;i+=2)
                 {
                   int last_r = chessSq.Row + current_offsets[i];
@@ -197,7 +196,7 @@ namespace Sah_Ai
                     if ((last_r + last_c) % 2 == 0)
                     {
                     buttons[last_r, last_c].BackColor = Color.White;
-                    
+                   
                     }
                     else
                     {
@@ -206,10 +205,11 @@ namespace Sah_Ai
                     }
 
                 }
-                }
+             }
                 yellow_buttons.Dequeue();
-
-            }
+             
+            
+             }
         }
  
         private void Button_Click(object sender, EventArgs e)
@@ -232,6 +232,8 @@ namespace Sah_Ai
                     offsets = piece.getOffsets(square, this,buttons);
                     if (!buttonOfssetsCorrelation.ContainsKey(buttons[square.Row,square.Column]))
                         buttonOfssetsCorrelation.Add(buttons[square.Row,square.Column],offsets);
+                    else
+                        buttonOfssetsCorrelation[buttons[square.Row,square.Column]] = offsets;
                     int row = square.Row;
                     int col = square.Column;
                     currectPieceToMove = pieces[row,col];
@@ -258,7 +260,7 @@ namespace Sah_Ai
                 pieces[new_x,new_y] = pieces[r,c];
                 pieces[new_x, new_y].Position = sq;
                 pieces[r,c] = null;
-                refreshBoard(r, c);
+                refreshBoard(r, c, offsets);
              
 
             }
@@ -275,7 +277,7 @@ namespace Sah_Ai
                 image = new Bitmap(image, clickedButton.Size);
                 clickedButton.BackgroundImageLayout = ImageLayout.Center;
                 clickedButton.BackgroundImage = image;
-                refreshBoard(last_x, last_y);       
+                refreshBoard(last_x, last_y, offsets);       
             }
 
         }
@@ -286,3 +288,4 @@ namespace Sah_Ai
         }
     }
 }
+
