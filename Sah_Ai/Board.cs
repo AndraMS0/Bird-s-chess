@@ -31,7 +31,7 @@ namespace Sah_Ai
         private TcpClient client;
         private bool isConnected = false;
         private string IP;
-        private int lockedPlayer = 1;
+        private Player lockedPlayer;
         private Button host;
         private Button connection;
         private Form currentForm;
@@ -86,6 +86,7 @@ namespace Sah_Ai
             whitePlayer = new Player("White Player", Piece.PieceColor.White);
             blackPlayer = new Player("Black Player", Piece.PieceColor.Black);
             currentPlayer = whitePlayer;
+            lockedPlayer = whitePlayer;
 
             for (int i = 0; i < 8; i++)
             {
@@ -206,7 +207,12 @@ namespace Sah_Ai
             var tokens = result.Split(" ".ToCharArray()).Select(x => int.Parse(x)).ToArray();
             ChessSquare new_poz = new ChessSquare(tokens[0], tokens[1]);
             ChessSquare old_poz = new ChessSquare(tokens[2], tokens[3]);
-            DoMove(new_poz, old_poz);
+            int[] offsetsReceived = new int[tokens.Length-4];
+            for(int i=4; i<tokens.Length; i++)
+            {
+                offsetsReceived[i-4] = tokens[i];
+            }
+            DoMove(new_poz, old_poz, offsetsReceived);
         }
         public void refreshBoard(int row, int col, int[] offset_array)
         {
@@ -223,8 +229,8 @@ namespace Sah_Ai
 
             for (int i = 0; i < offset_array.Length - 1; i += 2)
             {
-                int last_row = row + offsets[i];
-                int last_col = col + offsets[i + 1];
+                int last_row = row + offset_array[i];
+                int last_col = col + offset_array[i + 1];
                 if ((last_row + last_col) % 2 == 0)
                 {
                     _buttons[last_row, last_col].BackColor = Color.White;
@@ -241,12 +247,12 @@ namespace Sah_Ai
         }
         public bool isValidSquare(ChessSquare square)
         {
-            // Check if row and column are within the bounds of the board
+           
             return (square.Row >= 0 && square.Row < 8 && square.Column >= 0 && square.Column < 10);
         }
         public Piece getPiece(ChessSquare square)
         {
-            // Check if square is valid
+ 
             if (!isValidSquare(square))
             {
                 return null;
@@ -262,13 +268,10 @@ namespace Sah_Ai
             Button button = _buttons[row, col];
             Image image = Image.FromFile(filePath);
 
-            // resize the image to fit the button
             image = new Bitmap(image, button.Size);
 
-            // center the image in the button
             button.BackgroundImageLayout = ImageLayout.Center;
 
-            // set the image as the button's background image
             button.BackgroundImage = image;
             return image;
         }
@@ -329,9 +332,10 @@ namespace Sah_Ai
 
             }
         }
-        public void switch_control()
+        public void switch_control(ChessSquare current_type)
         {
-            if (currectPieceToMove.color == Piece.PieceColor.White)
+            Piece currentPiece = getPiece(current_type);
+            if (currentPiece.color == Piece.PieceColor.White)
             {
                 currentPlayer = blackPlayer;
             }
@@ -359,7 +363,7 @@ namespace Sah_Ai
             {
                 Piece piece = getPiece(square);
 
-                if (piece != null && piece.color == currentPlayer.Color)
+                if (piece != null && piece.color == currentPlayer.Color && currentPlayer==lockedPlayer)
                 {
 
                     clickedButton.BackColor = Color.Yellow;
@@ -383,56 +387,28 @@ namespace Sah_Ai
             if (clickedButton.BackColor == Color.Green)
             {
 
-                //int row = square.Row;
-                //int col = square.Column;
-                //new_x = row;
-                //new_y = col;
-                //Image image = currectPieceToMove.Pieceimage;
-                //ChessSquare selectedPiecePosition = currectPieceToMove.Position;// aici e ciudat
-                //int r = selectedPiecePosition.Row;
-                //int c = selectedPiecePosition.Column;
-                //image = new Bitmap(image, clickedButton.Size);
-                //clickedButton.BackgroundImageLayout = ImageLayout.Center;
-                //clickedButton.BackgroundImage = image;
-                //ChessSquare sq = new ChessSquare(new_x, new_y);
-                //_pieces[new_x, new_y] = _pieces[r, c];
-                //_pieces[new_x, new_y].Position = sq;
-                //_pieces[r, c] = null;
-                //switch_control();
-                //refreshBoard(r, c, offsets);
                 messageToSend = square.Row.ToString() + " " + square.Column.ToString() + " " +
-                    currectPieceToMove.Position.Row.ToString() + " " + currectPieceToMove.Position.Column.ToString();
-                DoMove(square, currectPieceToMove.Position);
+                currectPieceToMove.Position.Row.ToString() + " " + currectPieceToMove.Position.Column.ToString() + " " +
+                string.Join(" ", offsets);
+      
+                DoMove(square, currectPieceToMove.Position, offsets);
 
 
             }
             if (clickedButton.BackColor == Color.Red)
             {
-                //int row = square.Row;
-                //int col = square.Column;
-                //_pieces[row, col] = _pieces[last_x, last_y];
-                //_pieces[last_x, last_y] = null;
-                //ChessSquare sq = new ChessSquare(row, col);
-                //_pieces[row, col].Position = sq;
-                //_buttons[row, col].BackgroundImage = null;
-                //Image image = currectPieceToMove.Pieceimage;
-                //image = new Bitmap(image, clickedButton.Size);
-                //clickedButton.BackgroundImageLayout = ImageLayout.Center;
-                //clickedButton.BackgroundImage = image;
-                //switch_control();
-                //refreshBoard(last_x, last_y, offsets);
-                
-                ChessSquare old_sq = new ChessSquare(last_x, last_y);
+                ChessSquare old_sq = new ChessSquare(last_x, last_y);  
                 messageToSend = square.Row.ToString() + " " + square.Column.ToString() + " " +
-                    old_sq.Row.ToString() + " " + old_sq.Column.ToString();
-                DoMove(square, old_sq);
+                 currectPieceToMove.Position.Row.ToString() + " " + currectPieceToMove.Position.Column.ToString() + " " +
+                 string.Join(" ", offsets);
+                DoMove(square, old_sq, offsets);
                 
 
             }
             SendData(messageToSend);
 
         }
-        private void DoMove(ChessSquare new_Position, ChessSquare old_position)
+        private void DoMove(ChessSquare new_Position, ChessSquare old_position, int[] offsets_toMove)
         {
             Piece currentPiece = getPiece(old_position);
             _pieces[new_Position.Row, new_Position.Column] = _pieces[old_position.Row, old_position.Column];
@@ -443,8 +419,8 @@ namespace Sah_Ai
             image = new Bitmap(image, _buttons[new_Position.Row, new_Position.Column].Size);
             _buttons[new_Position.Row, new_Position.Column].BackgroundImageLayout = ImageLayout.Center;
             _buttons[new_Position.Row, new_Position.Column].BackgroundImage = image;
-            //switch_control();
-            //refreshBoard(old_position.Row, old_position.Column, offsets);
+            switch_control(new_Position);
+            refreshBoard(old_position.Row, old_position.Column, offsets_toMove);
         }
         private void WaitForConnection()
         {
@@ -462,19 +438,19 @@ namespace Sah_Ai
             {
                 IP = window.IP;
             }
-            Int32 port = 13000;
+            Int32 port = 1234;
             client = new TcpClient();
             client.Connect(IPAddress.Parse(IP), port);
             isConnected = true;
             button.Visible = false;
             host.Visible = false;
-            lockedPlayer = 0;
+            lockedPlayer = blackPlayer;
         }
         private void Host_Click(object sender, EventArgs e)
         {
             Button button = (Button)sender;
             server = null;
-            Int32 port = 13000;
+            Int32 port = 1234;
             IPAddress localAddr = IPAddress.Any;
             server = new TcpListener(localAddr, port);
             server.Start();
