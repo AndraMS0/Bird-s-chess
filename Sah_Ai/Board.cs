@@ -6,6 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 
 namespace Sah_Ai
 {
@@ -24,6 +27,14 @@ namespace Sah_Ai
         private Player whitePlayer;
         private Player blackPlayer;
         private Player currentPlayer;
+        private TcpListener server;
+        private TcpClient client;
+        private bool isConnected = false;
+        private string IP;
+        private int lockedPlayer = 1;
+        private Button host;
+        private Button connection;
+        private Form currentForm;
         public Button[,] MyButtons
         {
             get { return _buttons; }
@@ -71,6 +82,7 @@ namespace Sah_Ai
         }
         public Board(Form form)
         {
+            currentForm = form;
             whitePlayer = new Player("White Player", Piece.PieceColor.White);
             blackPlayer = new Player("Black Player", Piece.PieceColor.Black);
             currentPlayer = whitePlayer;
@@ -98,10 +110,25 @@ namespace Sah_Ai
                 }
 
             }
-            // O SA TRECEM AICI CALEA CA VAD CA NU VREA ALTCUMVA
+            host = new Button();
+            host.Location = new Point(1136, 102);
+            host.Size = new Size(100, 30);
+            host.Text = "Host";
+            host.Visible = true;
+            host.Click += new EventHandler(Host_Click);
+            form.Controls.Add(host);
+            
+
+            connection = new Button();
+            connection.Location = new Point(1136, 205);
+            connection.Size = new Size(100, 30);
+            connection.Text = "Connection";
+            connection.Visible = true;
+            connection.Click += new EventHandler(Connection_Click);
+            form.Controls.Add(connection);
+
             String folderpath = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\";
-            // INITIALIZARE PIESE ALBE
-            //PAWN
+        
             for (int i = 0; i < 10; i++)
             {
                 CreatePiece(Piece.PieceType.Pawn, Piece.PieceColor.White, 6, i, folderpath + "pion.png");
@@ -146,12 +173,40 @@ namespace Sah_Ai
             CreatePiece(Piece.PieceType.Guard, Piece.PieceColor.Black, 0, 3, folderpath + "guard2.png");
             //EQUERY
             CreatePiece(Piece.PieceType.Equery, Piece.PieceColor.Black, 0, 6, folderpath + "equery2.png");
-            //AM LASAT SI INITIALIZAREA VECHE IN CAZ DE CEVA
-            /*string whiteRook = @"C:\Users\andra\OneDrive\Desktop\an3\sah\Bird-s-chess\Sah_Ai\Images\tura.png";
-            Image image7 = imageToButton(whiteRook, 7, 0);
-            ChessSquare chessSquare7 = new ChessSquare(7, 0);
-            Piece whiteRook2 = new Rook(image7, Piece.PieceColor.White, chessSquare7);
-            pieces[7, 0] = whiteRook2;*/
+            Thread receiveThread = new Thread(ReceiveData);
+            receiveThread.Start();
+        }
+        private void ReceiveData()
+        {
+            while (true)
+            {
+                while (client == null || client.Connected == false) ;
+                Byte[] bytes = new Byte[256];
+                String data = null;
+                NetworkStream stream = client.GetStream();
+                int i;
+                while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
+                {
+                    data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                    //if (data != null) currentForm.Dispatcher.Invoke(() => DoReceive(data));
+                    if (data != null)
+                    {
+                        currentForm.Invoke((MethodInvoker)delegate
+                        {
+                            DoReceive(data);
+                        });
+                    }
+                    if (client is null) Application.Exit(); 
+                }
+
+            }
+        }
+        private void DoReceive(string result)
+        {
+            var tokens = result.Split(" ".ToCharArray()).Select(x => int.Parse(x)).ToArray();
+            ChessSquare new_poz = new ChessSquare(tokens[0], tokens[1]);
+            ChessSquare old_poz = new ChessSquare(tokens[2], tokens[3]);
+            DoMove(new_poz, old_poz);
         }
         public void refreshBoard(int row, int col, int[] offset_array)
         {
@@ -285,9 +340,17 @@ namespace Sah_Ai
                 currentPlayer = whitePlayer;
             }
         }
+        private void SendData(string textToSend)
+        {
+            NetworkStream stream = client.GetStream();
+            Byte[] data = System.Text.Encoding.ASCII.GetBytes(textToSend);
 
+            stream.Write(data, 0, data.Length);
+        }
         private void Button_Click(object sender, EventArgs e)
         {
+            string messageToSend = String.Empty;
+            if (!isConnected) return;
             Button clickedButton = (Button)sender;
 
             ChessSquare square = getSquare(clickedButton);
@@ -320,44 +383,106 @@ namespace Sah_Ai
             if (clickedButton.BackColor == Color.Green)
             {
 
-                int row = square.Row;
-                int col = square.Column;
-                new_x = row;
-                new_y = col;
-                Image image = currectPieceToMove.Pieceimage;
-                ChessSquare selectedPiecePosition = currectPieceToMove.Position;// aici e ciudat
-                int r = selectedPiecePosition.Row;
-                int c = selectedPiecePosition.Column;
-                image = new Bitmap(image, clickedButton.Size);
-                clickedButton.BackgroundImageLayout = ImageLayout.Center;
-                clickedButton.BackgroundImage = image;
-                ChessSquare sq = new ChessSquare(new_x, new_y);
-                _pieces[new_x, new_y] = _pieces[r, c];
-                _pieces[new_x, new_y].Position = sq;
-                _pieces[r, c] = null;
-                switch_control();
-                refreshBoard(r, c, offsets);
-
+                //int row = square.Row;
+                //int col = square.Column;
+                //new_x = row;
+                //new_y = col;
+                //Image image = currectPieceToMove.Pieceimage;
+                //ChessSquare selectedPiecePosition = currectPieceToMove.Position;// aici e ciudat
+                //int r = selectedPiecePosition.Row;
+                //int c = selectedPiecePosition.Column;
+                //image = new Bitmap(image, clickedButton.Size);
+                //clickedButton.BackgroundImageLayout = ImageLayout.Center;
+                //clickedButton.BackgroundImage = image;
+                //ChessSquare sq = new ChessSquare(new_x, new_y);
+                //_pieces[new_x, new_y] = _pieces[r, c];
+                //_pieces[new_x, new_y].Position = sq;
+                //_pieces[r, c] = null;
+                //switch_control();
+                //refreshBoard(r, c, offsets);
+                messageToSend = square.Row.ToString() + " " + square.Column.ToString() + " " +
+                    currectPieceToMove.Position.Row.ToString() + " " + currectPieceToMove.Position.Column.ToString();
+                DoMove(square, currectPieceToMove.Position);
 
 
             }
             if (clickedButton.BackColor == Color.Red)
             {
-                int row = square.Row;
-                int col = square.Column;
-                _pieces[row, col] = _pieces[last_x, last_y];
-                _pieces[last_x, last_y] = null;
-                ChessSquare sq = new ChessSquare(row, col);
-                _pieces[row, col].Position = sq;
-                _buttons[row, col].BackgroundImage = null;
-                Image image = currectPieceToMove.Pieceimage;
-                image = new Bitmap(image, clickedButton.Size);
-                clickedButton.BackgroundImageLayout = ImageLayout.Center;
-                clickedButton.BackgroundImage = image;
-                switch_control();
-                refreshBoard(last_x, last_y, offsets);
-            }
+                //int row = square.Row;
+                //int col = square.Column;
+                //_pieces[row, col] = _pieces[last_x, last_y];
+                //_pieces[last_x, last_y] = null;
+                //ChessSquare sq = new ChessSquare(row, col);
+                //_pieces[row, col].Position = sq;
+                //_buttons[row, col].BackgroundImage = null;
+                //Image image = currectPieceToMove.Pieceimage;
+                //image = new Bitmap(image, clickedButton.Size);
+                //clickedButton.BackgroundImageLayout = ImageLayout.Center;
+                //clickedButton.BackgroundImage = image;
+                //switch_control();
+                //refreshBoard(last_x, last_y, offsets);
+                
+                ChessSquare old_sq = new ChessSquare(last_x, last_y);
+                messageToSend = square.Row.ToString() + " " + square.Column.ToString() + " " +
+                    old_sq.Row.ToString() + " " + old_sq.Column.ToString();
+                DoMove(square, old_sq);
+                
 
+            }
+            SendData(messageToSend);
+
+        }
+        private void DoMove(ChessSquare new_Position, ChessSquare old_position)
+        {
+            Piece currentPiece = getPiece(old_position);
+            _pieces[new_Position.Row, new_Position.Column] = _pieces[old_position.Row, old_position.Column];
+            _pieces[old_position.Row, old_position.Column] = null;
+            _pieces[new_Position.Row, new_Position.Column].Position = new_Position;
+
+            Image image = currentPiece.Pieceimage;
+            image = new Bitmap(image, _buttons[new_Position.Row, new_Position.Column].Size);
+            _buttons[new_Position.Row, new_Position.Column].BackgroundImageLayout = ImageLayout.Center;
+            _buttons[new_Position.Row, new_Position.Column].BackgroundImage = image;
+            //switch_control();
+            //refreshBoard(old_position.Row, old_position.Column, offsets);
+        }
+        private void WaitForConnection()
+        {
+            while (client is null)
+            {
+                client = server.AcceptTcpClient();
+            }
+            isConnected = true;
+        }
+        private void Connection_Click(object sender, EventArgs args)
+        {
+            Button button = (Button)sender;
+            var window = new IPInput();
+            if (window.ShowDialog() == DialogResult.OK)
+            {
+                IP = window.IP;
+            }
+            Int32 port = 13000;
+            client = new TcpClient();
+            client.Connect(IPAddress.Parse(IP), port);
+            isConnected = true;
+            button.Visible = false;
+            host.Visible = false;
+            lockedPlayer = 0;
+        }
+        private void Host_Click(object sender, EventArgs e)
+        {
+            Button button = (Button)sender;
+            server = null;
+            Int32 port = 13000;
+            IPAddress localAddr = IPAddress.Any;
+            server = new TcpListener(localAddr, port);
+            server.Start();
+            button.Visible = false;
+            connection.Visible = false;
+            
+            Thread hostThread = new Thread(WaitForConnection);
+            hostThread.Start();
         }
 
         public void play()

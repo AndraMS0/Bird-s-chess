@@ -56,6 +56,12 @@
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
     <Compile Include="Guard.cs" />
+    <Compile Include="IPInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="IPInput.Designer.cs">
+      <DependentUpon>IPInput.cs</DependentUpon>
+    </Compile>
     <Compile Include="King.cs" />
     <Compile Include="Knight.cs" />
     <Compile Include="Pawn.cs" />
@@ -68,6 +74,9 @@
     <Compile Include="Rook.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="IPInput.resx">
+      <DependentUpon>IPInput.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
