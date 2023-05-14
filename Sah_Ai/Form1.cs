@@ -34,7 +34,7 @@ namespace Sah_Ai
 		private void Network_Click(object sender, EventArgs e)
         {
 			Button button = (Button)sender;
-			Board tabla = new Board(this);
+			NetworkGame tabla = new NetworkGame(this);
 			button.Enabled = false;
 			button.Visible = false;
 			

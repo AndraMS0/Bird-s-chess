@@ -34,7 +34,7 @@ namespace Sah_Ai
             this.Pieceimage = image;
             this.Position = square;
         }
-        public abstract int[] getOffsets(ChessSquare position, Board board, Button[,] buttons);
+        public abstract int[] getOffsets(ChessSquare position, Game board, Button[,] buttons);
 
     }
 }

@@ -10,12 +10,13 @@ namespace Sah_Ai
 {
     public class Pawn : Piece
     {
+        
         public Pawn(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
         {
             this.Type = PieceType.Pawn;
         }
 
-        public override int[] getOffsets(ChessSquare position, Board board, Button[,] buttons)
+        public override int[] getOffsets(ChessSquare position, Game board, Button[,] buttons)
         {
             List<int> rowOffsets = new List<int>();
             List<int> colOffsets = new List<int>();
@@ -32,7 +33,7 @@ namespace Sah_Ai
                 colOffsets.Add(0);
 
                 // Color the button of the potential move
-                Button[,] copyButtons = board.MyButtons;
+                Button[,] copyButtons = board.MyBoard.MyButtons;
                 Button button = copyButtons[square.Row, square.Column];
                 button.BackColor = Color.Green;
 
@@ -50,7 +51,7 @@ namespace Sah_Ai
                     colOffsets.Add(0);
 
                     // Color the button of the potential move
-                    Button[,] copyButtons = board.MyButtons;
+                    Button[,] copyButtons = board.MyBoard.MyButtons;
                     Button button = copyButtons[square.Row, square.Column];
                     button.BackColor = Color.Green;
                 }
@@ -68,7 +69,7 @@ namespace Sah_Ai
                     colOffsets.Add(offset);
 
                     // Color the button of the potential move
-                    Button[,] copyButtons = board.MyButtons;
+                    Button[,] copyButtons = board.MyBoard.MyButtons;
                     Button button = copyButtons[square.Row, square.Column];
                     button.BackColor = Color.Red;
                 }

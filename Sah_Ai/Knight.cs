@@ -15,7 +15,7 @@ namespace Sah_Ai
 		{
 			this.Type = PieceType.Knight;
 		}
-        public override int[] getOffsets(ChessSquare position, Board board, Button[,] buttons)
+        public override int[] getOffsets(ChessSquare position, Game board, Button[,] buttons)
         {
             List<int> rowOffsets = new List<int>();
             List<int> colOffsets = new List<int>();
