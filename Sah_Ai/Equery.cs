@@ -10,7 +10,8 @@ namespace Sah_Ai
 {
 	class Equery : Piece
 	{
-		public Equery(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
+        public override int score => 7;
+        public Equery(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
 		{
 			this.Type = PieceType.Equery;
 		}

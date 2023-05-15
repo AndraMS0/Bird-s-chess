@@ -10,7 +10,7 @@ namespace Sah_Ai
 {
     public class Pawn : Piece
     {
-        
+        public override int score => 1;
         public Pawn(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
         {
             this.Type = PieceType.Pawn;
@@ -21,7 +21,6 @@ namespace Sah_Ai
             List<int> rowOffsets = new List<int>();
             List<int> colOffsets = new List<int>();
 
-            // Check if pawn is white or black
             int direction = (this.color == PieceColor.White) ? -1 : 1;
 
             // Check if pawn can move one square forward

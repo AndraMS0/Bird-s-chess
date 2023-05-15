@@ -16,6 +16,7 @@ namespace Sah_Ai
         public PieceColor color { get; private set; }
         public ChessSquare Position;
         public Image Pieceimage { get; set; }
+        public abstract int score { get; }
         public ChessSquare MyPosition
         {
             get
@@ -33,6 +34,7 @@ namespace Sah_Ai
             this.color = color;
             this.Pieceimage = image;
             this.Position = square;
+            
         }
         public abstract int[] getOffsets(ChessSquare position, Game board, Button[,] buttons);
 

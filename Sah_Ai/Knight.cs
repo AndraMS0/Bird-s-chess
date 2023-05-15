@@ -10,8 +10,8 @@ namespace Sah_Ai
 {
 	class Knight : Piece
 	{
-
-		public Knight(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
+        public override int score => 3;
+        public Knight(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
 		{
 			this.Type = PieceType.Knight;
 		}

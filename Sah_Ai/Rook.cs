@@ -8,9 +8,10 @@ using System.Windows.Forms;
 
 namespace Sah_Ai
 {
-	class Rook : Piece
+	public class Rook : Piece
 	{
-		public Rook(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
+        public override int score => 5;
+        public Rook(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
 		{
 			this.Type = PieceType.Rook;
 		}

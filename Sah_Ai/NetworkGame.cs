@@ -21,13 +21,13 @@ namespace Sah_Ai
         private string IP;
         private Player lockedPlayer;
         private Button host;
-        private Button connection;
-        private Form currentForm;
-        private Game game;
+        private Button _connection;
+        private Form _currentForm;
+        private Game _game;
 
         public NetworkGame(Form form)
         {
-            game = new Game(form);
+            _game = new Game(form);
             for (int i = 0; i < 8; i++)
             {
                 for (int j = 0; j < 10; j++)
@@ -45,18 +45,18 @@ namespace Sah_Ai
                         button.BackColor = Color.FromArgb(160, 160, 160);
                     }
                     button.Location = new Point(j * 70, i * 70);
-                    game.MyBoard.MyButtons[i, j] = button;
+                    _game.MyBoard.MyButtons[i, j] = button;
 
-                    form.Controls.Add(game.MyBoard.MyButtons[i, j]);
+                    form.Controls.Add(_game.MyBoard.MyButtons[i, j]);
                 }
             }
-            game.MyBoard.CreateAllPieces();
+            _game.MyBoard.CreateAllPieces();
 
-            currentForm = form;
-            game.MyWhitePlayer = new Player("White Player", Piece.PieceColor.White);
-            game.MyBlackPlayer = new Player("Black Player", Piece.PieceColor.Black);
-            game.MyCurrentPlayer = game.MyWhitePlayer;
-            lockedPlayer = game.MyWhitePlayer;
+            _currentForm = form;
+            _game.MyWhitePlayer = new Player("White Player", Piece.PieceColor.White);
+            _game.MyBlackPlayer = new Player("Black Player", Piece.PieceColor.Black);
+            _game.MyCurrentPlayer = _game.MyWhitePlayer;
+            lockedPlayer = _game.MyWhitePlayer;
 
             host = new Button();
             host.Location = new Point(850, 102);
@@ -66,13 +66,13 @@ namespace Sah_Ai
             host.Click += new EventHandler(Host_Click);
             form.Controls.Add(host);
             
-            connection = new Button();
-            connection.Location = new Point(850, 205);
-            connection.Size = new Size(100, 30);
-            connection.Text = "Connection";
-            connection.Visible = true;
-            connection.Click += new EventHandler(Connection_Click);
-            form.Controls.Add(connection);
+            _connection = new Button();
+            _connection.Location = new Point(850, 205);
+            _connection.Size = new Size(100, 30);
+            _connection.Text = "Connection";
+            _connection.Visible = true;
+            _connection.Click += new EventHandler(Connection_Click);
+            form.Controls.Add(_connection);
 
             Thread receiveThread = new Thread(ReceiveData);
             receiveThread.Start();
@@ -91,7 +91,7 @@ namespace Sah_Ai
                     data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
                     if (data != null)
                     {
-                        currentForm.Invoke((MethodInvoker)delegate
+                        _currentForm.Invoke((MethodInvoker)delegate
                         {
                             DoReceive(data);
                         });
@@ -111,7 +111,7 @@ namespace Sah_Ai
             {
                 offsetsReceived[i-4] = tokens[i];
             }
-            game.DoMove(new_poz, old_poz, offsetsReceived);
+            _game.DoMove(new_poz, old_poz, offsetsReceived);
         }
  
         private void SendData(string textToSend)
@@ -127,27 +127,27 @@ namespace Sah_Ai
             if (!isConnected) return;
             Button clickedButton = (Button)sender;
 
-            ChessSquare square = game.getSquare(clickedButton);
+            ChessSquare square = _game.getSquare(clickedButton);
 
             if (square != null)
             {
-                Piece piece = game.getPiece(square);
+                Piece piece = _game.getPiece(square);
 
-                if (piece != null && piece.color == game.MyCurrentPlayer.Color && game.MyCurrentPlayer==lockedPlayer)
+                if (piece != null && piece.color == _game.MyCurrentPlayer.Color && _game.MyCurrentPlayer==lockedPlayer)
                 {
 
                     clickedButton.BackColor = Color.Yellow;
-                    game.MyYellow_buttons.Enqueue(square);
-                    if (game.MyYellow_buttons.Count > 1)
-                        game.clear_old_selection();
-                    offsets = piece.getOffsets(square, game, game.MyBoard.MyButtons);
-                    if (!game.MyButtonOfssetsCorrelation.ContainsKey(game.MyBoard.MyButtons[square.Row, square.Column]))
-                        game.MyButtonOfssetsCorrelation.Add(game.MyBoard.MyButtons[square.Row, square.Column], offsets);
+                    _game.MyYellow_buttons.Enqueue(square);
+                    if (_game.MyYellow_buttons.Count > 1)
+                        _game.clear_old_selection();
+                    offsets = piece.getOffsets(square, _game, _game.MyBoard.MyButtons);
+                    if (!_game.MyButtonOfssetsCorrelation.ContainsKey(_game.MyBoard.MyButtons[square.Row, square.Column]))
+                        _game.MyButtonOfssetsCorrelation.Add(_game.MyBoard.MyButtons[square.Row, square.Column], offsets);
                     else
-                        game.MyButtonOfssetsCorrelation[game.MyBoard.MyButtons[square.Row, square.Column]] = offsets;
+                        _game.MyButtonOfssetsCorrelation[_game.MyBoard.MyButtons[square.Row, square.Column]] = offsets;
                     int row = square.Row;
                     int col = square.Column;
-                    currectPieceToMove = game.MyBoard.MyPieces[row, col];
+                    currectPieceToMove = _game.MyBoard.MyPieces[row, col];
                     last_x = row;
                     last_y = col;
 
@@ -161,7 +161,7 @@ namespace Sah_Ai
                 currectPieceToMove.Position.Row.ToString() + " " + currectPieceToMove.Position.Column.ToString() + " " +
                 string.Join(" ", offsets);
       
-                game.DoMove(square, currectPieceToMove.Position, offsets);
+                _game.DoMove(square, currectPieceToMove.Position, offsets);
 
 
             }
@@ -171,7 +171,7 @@ namespace Sah_Ai
                 messageToSend = square.Row.ToString() + " " + square.Column.ToString() + " " +
                  currectPieceToMove.Position.Row.ToString() + " " + currectPieceToMove.Position.Column.ToString() + " " +
                  string.Join(" ", offsets);
-                game.DoMove(square, old_sq, offsets);
+                _game.DoMove(square, old_sq, offsets);
                 
 
             }
@@ -190,7 +190,7 @@ namespace Sah_Ai
         }
         private void Connection_Click(object sender, EventArgs args)
         {
-            currentForm.Text = "Client";
+            _currentForm.Text = "Client";
             Button button = (Button)sender;
             var window = new IPInput();
             if (window.ShowDialog() == DialogResult.OK)
@@ -203,11 +203,11 @@ namespace Sah_Ai
             isConnected = true;
             button.Visible = false;
             host.Visible = false;
-            lockedPlayer = game.MyBlackPlayer;
+            lockedPlayer = _game.MyBlackPlayer;
         }
         private void Host_Click(object sender, EventArgs e)
         {
-            currentForm.Text = "Host";
+            _currentForm.Text = "Host";
             Button button = (Button)sender;
             server = null;
             Int32 port = 1234;
@@ -215,7 +215,7 @@ namespace Sah_Ai
             server = new TcpListener(localAddr, port);
             server.Start();
             button.Visible = false;
-            connection.Visible = false;
+            _connection.Visible = false;
             
             Thread hostThread = new Thread(WaitForConnection);
             hostThread.Start();

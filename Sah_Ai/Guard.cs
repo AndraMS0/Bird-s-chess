@@ -10,7 +10,8 @@ namespace Sah_Ai
 {
 	class Guard : Piece
 	{
-		public Guard(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
+        public override int score => 9;
+        public Guard(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
 		{
 			this.Type = PieceType.Guard;
 		}

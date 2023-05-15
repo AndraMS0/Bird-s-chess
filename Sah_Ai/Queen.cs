@@ -11,6 +11,7 @@ namespace Sah_Ai
 {
     class Queen : Piece
     {
+        public override int score => 9;
         public Queen(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
         {
             this.Type = PieceType.Queen;

@@ -11,9 +11,11 @@ namespace Sah_Ai
 {
 	public class Bishop : Piece
 	{
-		public Bishop(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
+        public override int score => 3;
+        public Bishop(Image image, PieceColor color, ChessSquare square) : base(image, color, square)
 		{
 			this.Type = PieceType.Bishop;
+            
 		}
         public override int[] getOffsets(ChessSquare position, Game board, Button[,] buttons)
         {
@@ -34,7 +36,6 @@ namespace Sah_Ai
                         rowOffsets.Add(row - position.Row);
                         colOffsets.Add(col - position.Column);
 
-                        
                         buttons[row, col].BackColor = Color.Green;
                     }
                     else if (board.getPiece(new ChessSquare(row, col)).color != this.color)
