@@ -102,38 +102,46 @@ namespace Sah_Ai
         {
             var bestMove = GetBestMoveForEnemy();
             _game.DoMove(bestMove.Item2,bestMove.Item1.MyPosition,bestMove.Item3);
+            //_game.MyCurrentPlayer = _game.MyBlackPlayer;
         }
         public Tuple<Piece, ChessSquare, int[]> GetBestMoveForEnemy()
         {
-            var allEnemyMoves = GetAllMovesForPlayerWithPieces(Piece.PieceColor.White);
+            var allEnemyMoves = GetAllMovesForPlayerWithPieces(Piece.PieceColor.Black);
             var scores = new List<int>();
             foreach(var enemy in allEnemyMoves)
             {
+                if (enemy.Item2 == null)
+                    continue;
                 var initialPosition = enemy.Item1.MyPosition;
                 ChessSquare potentialMoves = enemy.Item2;
                
                     ChessSquare nextPosition = enemy.Item2;
                     var initialPieceOnNextMove = _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column];
-
+                var initialPieceOnNext = _game.getPiece(nextPosition);
                     var piece = enemy.Item1;
                     _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column] = null;
 
                     //doesMove
-                    _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
-                    _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column] = piece;
-                    _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column].MyPosition = nextPosition;
+                    
+                _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column] = _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column]; //piece;
+                _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
+                //_game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column].MyPosition = nextPosition;
+                piece.MyPosition = nextPosition;
+                enemy.Item1.Position = nextPosition;
 
-                    scores.Add(Minimax(2, _game.MyWhitePlayer));
+                scores.Add(Minimax(3, _game.MyBlackPlayer));
 
                     //doesMove
                    // _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
                     _game.MyBoard.MyPieces[initialPosition.Row, initialPosition.Column] = _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column];
-                    _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column] = initialPieceOnNextMove;
-                    _game.MyBoard.MyPieces[initialPosition.Row, initialPosition.Column].MyPosition = initialPosition;
+                    _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column] = initialPieceOnNext;
+                // _game.MyBoard.MyPieces[initialPosition.Row, initialPosition.Column].MyPosition = initialPosition;
+                piece.MyPosition = initialPosition;
+                enemy.Item1.Position = initialPosition;
 
-               
+
             }
-            _game.MyCurrentPlayer = _game.MyWhitePlayer;
+            _game.MyCurrentPlayer = _game.MyBlackPlayer;
             return allEnemyMoves[scores.IndexOf(scores.Max())];
         }
         public int Minimax(int depth, Player player)
@@ -142,7 +150,7 @@ namespace Sah_Ai
             int value = 0;
             if (depth == 0)
                 return value;
-            var allMoves = GetAllMovesForPlayerWithPieces(Piece.PieceColor.White);
+            var allMoves = GetAllMovesForPlayerWithPieces(player.Color);
             List<Tuple<Piece, ChessSquare, int[]>> newAllMoves = new List<Tuple<Piece, ChessSquare, int[]>>();
             //foreach(var move in allMoves)
             //{
@@ -163,56 +171,63 @@ namespace Sah_Ai
             }
             
 
-            if (player == _game.MyWhitePlayer)
+            if (player == _game.MyBlackPlayer)
             {
                 value = int.MinValue;
                 foreach(var enemy in newAllMoves)
                 {
+                    
                         var positionToMove = enemy.Item2;
                         var pieceOnNextPosition = _game.getPiece(positionToMove);
-                        if (pieceOnNextPosition.Type == Piece.PieceType.King && pieceOnNextPosition.color == Piece.PieceColor.Black)
+                        if(pieceOnNextPosition != null)
+                        if (pieceOnNextPosition.Type == Piece.PieceType.King && pieceOnNextPosition.color == Piece.PieceColor.White)
                             continue;
-
-                        if(pieceOnNextPosition != null && pieceOnNextPosition.color == Piece.PieceColor.Black)
+                        if (enemy.Item1 == null)
+                            continue;
+                        if(pieceOnNextPosition != null && pieceOnNextPosition.color == Piece.PieceColor.White)
                         {
                             value += pieceOnNextPosition.score;
                         }
-
                         var initialPosition = enemy.Item1.Position;
                         var initialPieceOnNextMovePosition = _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column];
                         var piece = enemy.Item1;
                         _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = null;
-                        //doesMove
-
-                        _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
-                        _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = piece;
-                        _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column].MyPosition = positionToMove;
-                       
-                        value += Minimax(depth - 1, _game.MyBlackPlayer);
-                        //doesMove
-
-                        _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
-                        _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = piece;
-                        _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = initialPieceOnNextMovePosition;
-                        _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column].MyPosition = initialPosition;
-
+                    //doesMove
+                    _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = piece;
+                    _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
                     
+                       // _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column].MyPosition = positionToMove;
+                   piece.MyPosition = positionToMove;
+                    enemy.Item1.Position = positionToMove;
+                    //_game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
+
+                    value += Minimax(depth - 1, _game.MyWhitePlayer);
+                        //doesMove
+
+                        //_game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
+                        _game.MyBoard.MyPieces[initialPosition.Row, initialPosition.Column] = _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column];
+                    _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = pieceOnNextPosition;//initialPieceOnNextMovePosition;
+                                                                                                            //_game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column].MyPosition = initialPosition;
+                    piece.MyPosition = initialPosition;
+                    enemy.Item1.Position = initialPosition;
+
+
                 }
 
             }
 
-            if(player == _game.MyBlackPlayer)
+            if(player == _game.MyWhitePlayer)
             {
                 value = int.MaxValue;
                 foreach (var enemy in newAllMoves)
                 {
-                   
-                        var positionToMove = enemy.Item2;
+                    
+                    var positionToMove = enemy.Item2;
                         var pieceOnNextPosition = _game.getPiece(positionToMove);
-                        if (pieceOnNextPosition.Type == Piece.PieceType.King && pieceOnNextPosition.color == Piece.PieceColor.White)
+                        if (pieceOnNextPosition != null && pieceOnNextPosition.Type == Piece.PieceType.King && pieceOnNextPosition.color == Piece.PieceColor.Black)
                             continue;
 
-                        if (pieceOnNextPosition != null && pieceOnNextPosition.color == Piece.PieceColor.White)
+                        if (pieceOnNextPosition != null && pieceOnNextPosition.color == Piece.PieceColor.Black)
                         {
                             value -= pieceOnNextPosition.score;
                         }
@@ -223,23 +238,47 @@ namespace Sah_Ai
                         _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = null;
                         //doesMove
 
-                        _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
+                        
                         _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = piece;
-                        _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column].MyPosition = positionToMove;
+                    _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
+                    _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column].MyPosition = positionToMove;
+                        piece.MyPosition = positionToMove;
+                    enemy.Item1.Position = positionToMove;
+                        value -= Minimax(depth - 1, _game.MyBlackPlayer);
+                    //doesMove
 
-                        value -= Minimax(depth - 1, _game.MyWhitePlayer);
-                        //doesMove
-
-                        _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
-                        _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = piece;
+                    //_game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
+                    _game.MyBoard.MyPieces[initialPosition.Row, initialPosition.Column] = _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column]; //piece;
                         _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = initialPieceOnNextMovePosition;
-                        _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column].MyPosition = initialPosition;
+                     //_game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column].MyPosition = initialPosition;
+                        piece.MyPosition = initialPosition;
+                    enemy.Item1.Position = initialPosition;
 
-                    
                 }
             }
 
             return value;
+
+        }
+        public void RefreshBoardAi(int row, int col, int[] offset_array)
+        {
+         
+            for (int i = 0; i < offset_array.Length - 1; i += 2)
+            {
+                int last_row = row + offset_array[i];
+                int last_col = col + offset_array[i + 1];
+                if ((last_row + last_col) % 2 == 0)
+                {
+                    _game.MyBoard.MyButtons[last_row, last_col].BackColor = Color.White;
+
+                }
+                else
+                {
+                    _game.MyBoard.MyButtons[last_row, last_col].BackColor = Color.FromArgb(160, 160, 160);
+
+                }
+
+            }
 
         }
         public List<Tuple<Piece, ChessSquare, int[]>> GetAllMovesForPlayerWithPieces(Piece.PieceColor player)
@@ -255,6 +294,8 @@ namespace Sah_Ai
                        // if (_game.MyBoard.MyPieces[i, j].color == player) { 
                         // List<ChessSquare> potentialMoves = new List<ChessSquare>();
                         int[] move = _game.MyBoard.MyPieces[i, j].getOffsets(square, _game, _game.MyBoard.MyButtons);
+                        if (move.Length == 0)
+                            continue;
                         for (int k = 0; k < 8; k++)
                         {
                             for (int n = 0; n < 10; n++)
@@ -267,7 +308,7 @@ namespace Sah_Ai
                                 }
                             }
                         }
-                        _game.refreshBoard(square.Row, square.Column, move);
+                        RefreshBoardAi(square.Row, square.Column, move);
                         //allMoves.Add(new Tuple<Piece, List<ChessSquare>>(_game.MyBoard.MyPieces[i, j], potentialMoves ));
                        // }
                     }
