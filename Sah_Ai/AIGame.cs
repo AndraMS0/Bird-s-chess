@@ -67,6 +67,7 @@ namespace Sah_Ai
                     if (_game.MyYellow_buttons.Count > 1)
                         _game.clear_old_selection();
                     _offsets = piece.getOffsets(square, _game, _game.MyBoard.MyButtons);
+                    _game.VerifyKingState();
                     if (!_game.MyButtonOfssetsCorrelation.ContainsKey(_game.MyBoard.MyButtons[square.Row, square.Column]))
                         _game.MyButtonOfssetsCorrelation.Add(_game.MyBoard.MyButtons[square.Row, square.Column], _offsets);
                     else
@@ -89,20 +90,39 @@ namespace Sah_Ai
             }
             if (clickedButton.BackColor == Color.Red)
             {
-                ChessSquare old_sq = new ChessSquare(_last_x, _last_y);
-                _game.DoMove(square, old_sq, _offsets);
+                Piece.PieceColor kingColor = Piece.PieceColor.White;
+                if (_game.IsCheck(square, ref kingColor))
+                {
+                    MessageBox.Show($"The {kingColor} King is in Check");
+                }
+                else
+                {
+                    ChessSquare old_sq = new ChessSquare(_last_x, _last_y);
+                    _game.DoMove(square, old_sq, _offsets);
+                }
+                
                 CalculateBestMoveForEnemy();
 
             }
+
            
 
         }
 
+  
         public void CalculateBestMoveForEnemy()
         {
             var bestMove = GetBestMoveForEnemy();
-            _game.DoMove(bestMove.Item2,bestMove.Item1.MyPosition,bestMove.Item3);
-            //_game.MyCurrentPlayer = _game.MyBlackPlayer;
+            Piece.PieceColor kingColor = Piece.PieceColor.White;
+            if (_game.IsCheck(bestMove.Item2, ref kingColor))
+            {
+                MessageBox.Show($"The {kingColor} King is in Check");
+            }
+            else
+            {
+                _game.DoMove(bestMove.Item2, bestMove.Item1.MyPosition, bestMove.Item3);
+            }
+            
         }
         public Tuple<Piece, ChessSquare, int[]> GetBestMoveForEnemy()
         {
@@ -179,9 +199,10 @@ namespace Sah_Ai
                     
                         var positionToMove = enemy.Item2;
                         var pieceOnNextPosition = _game.getPiece(positionToMove);
-                        if(pieceOnNextPosition != null)
+                    if (pieceOnNextPosition != null)
                         if (pieceOnNextPosition.Type == Piece.PieceType.King && pieceOnNextPosition.color == Piece.PieceColor.White)
-                            continue;
+                            //continue;
+                            return value;
                         if (enemy.Item1 == null)
                             continue;
                         if(pieceOnNextPosition != null && pieceOnNextPosition.color == Piece.PieceColor.White)
@@ -224,8 +245,9 @@ namespace Sah_Ai
                     
                     var positionToMove = enemy.Item2;
                         var pieceOnNextPosition = _game.getPiece(positionToMove);
-                        if (pieceOnNextPosition != null && pieceOnNextPosition.Type == Piece.PieceType.King && pieceOnNextPosition.color == Piece.PieceColor.Black)
-                            continue;
+                    if (pieceOnNextPosition != null && pieceOnNextPosition.Type == Piece.PieceType.King && pieceOnNextPosition.color == Piece.PieceColor.Black)
+                        //continue;
+                        return -value;
 
                         if (pieceOnNextPosition != null && pieceOnNextPosition.color == Piece.PieceColor.Black)
                         {

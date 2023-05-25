@@ -58,6 +58,16 @@ namespace Sah_Ai
         {
             board = new Board(form);
         }
+        public bool IsCheck(ChessSquare square, ref Piece.PieceColor kingColor)
+        {
+            var piece = getPiece(square);
+            if(piece!= null && piece.Type == Piece.PieceType.King)
+            {
+                kingColor = piece.color;
+                return true;
+            }
+            return false;
+        }
         public void refreshBoard(int row, int col, int[] offset_array)
         {
             if ((row + col) % 2 == 0)
@@ -123,6 +133,22 @@ namespace Sah_Ai
             }
 
             return null;
+        }
+        public void VerifyKingState()
+        {
+            for (int i = 0; i < 8; i++)
+                for (int j = 0; j < 10; j++)
+                {
+                    ChessSquare sq = new ChessSquare(i, j);
+                    Piece currentPiece = getPiece(sq);
+                    if (MyBoard.MyButtons[i, j].BackColor == Color.Red && currentPiece.Type == Piece.PieceType.King)
+                    {
+                        Piece.PieceColor pieceColor = currentPiece.color;
+                        MessageBox.Show($"The {pieceColor} King is in Check");
+                        
+                     
+                    }
+                }
         }
 
         public void clear_old_selection()
