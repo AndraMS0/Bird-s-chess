@@ -15,8 +15,13 @@ namespace Sah_Ai
         private int[] _offsets;
         private int _last_x;
         private int _last_y;
+        private int _depth;
+        public void SetDepth(int depth) {
+           this._depth = depth;
+        }
         public AIGame(Form form)
         {
+
             _game = new Game(form);
             for (int i = 0; i < 8; i++)
             {
@@ -133,29 +138,20 @@ namespace Sah_Ai
                 if (enemy.Item2 == null)
                     continue;
                 var initialPosition = enemy.Item1.MyPosition;
-                ChessSquare potentialMoves = enemy.Item2;
-               
-                    ChessSquare nextPosition = enemy.Item2;
-                    var initialPieceOnNextMove = _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column];
+                ChessSquare nextPosition = enemy.Item2;
                 var initialPieceOnNext = _game.getPiece(nextPosition);
                     var piece = enemy.Item1;
                     _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column] = null;
-
-                    //doesMove
                     
                 _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column] = _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column]; //piece;
                 _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
-                //_game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column].MyPosition = nextPosition;
                 piece.MyPosition = nextPosition;
                 enemy.Item1.Position = nextPosition;
 
-                scores.Add(Minimax(3, _game.MyBlackPlayer));
+                scores.Add(Minimax(_depth, _game.MyBlackPlayer));
 
-                    //doesMove
-                   // _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
                     _game.MyBoard.MyPieces[initialPosition.Row, initialPosition.Column] = _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column];
-                    _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column] = initialPieceOnNext;
-                // _game.MyBoard.MyPieces[initialPosition.Row, initialPosition.Column].MyPosition = initialPosition;
+                _game.MyBoard.MyPieces[nextPosition.Row, nextPosition.Column] = initialPieceOnNext;
                 piece.MyPosition = initialPosition;
                 enemy.Item1.Position = initialPosition;
 
@@ -172,14 +168,6 @@ namespace Sah_Ai
                 return value;
             var allMoves = GetAllMovesForPlayerWithPieces(player.Color);
             List<Tuple<Piece, ChessSquare, int[]>> newAllMoves = new List<Tuple<Piece, ChessSquare, int[]>>();
-            //foreach(var move in allMoves)
-            //{
-            //    ChessSquare potentialMoves = move.Item2;
-            //    potentialMoves.RemoveAll(x => _game.MyBoard.MyPieces[x.Row, x.Column] == null);
-            //    if(potentialMoves.Count > 0)
-            //       newAllMoves.Add(new Tuple<Piece, List<ChessSquare>>(move.Item1, potentialMoves));
-
-            //}
             
             foreach(var move in allMoves)
             {
@@ -216,19 +204,11 @@ namespace Sah_Ai
                     //doesMove
                     _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = piece;
                     _game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
-                    
-                       // _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column].MyPosition = positionToMove;
                    piece.MyPosition = positionToMove;
                     enemy.Item1.Position = positionToMove;
-                    //_game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
-
                     value += Minimax(depth - 1, _game.MyWhitePlayer);
-                        //doesMove
-
-                        //_game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
                         _game.MyBoard.MyPieces[initialPosition.Row, initialPosition.Column] = _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column];
-                    _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = pieceOnNextPosition;//initialPieceOnNextMovePosition;
-                                                                                                            //_game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column].MyPosition = initialPosition;
+                    _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = pieceOnNextPosition;
                     piece.MyPosition = initialPosition;
                     enemy.Item1.Position = initialPosition;
 
@@ -246,7 +226,6 @@ namespace Sah_Ai
                     var positionToMove = enemy.Item2;
                         var pieceOnNextPosition = _game.getPiece(positionToMove);
                     if (pieceOnNextPosition != null && pieceOnNextPosition.Type == Piece.PieceType.King && pieceOnNextPosition.color == Piece.PieceColor.Black)
-                        //continue;
                         return -value;
 
                         if (pieceOnNextPosition != null && pieceOnNextPosition.color == Piece.PieceColor.Black)
@@ -258,7 +237,6 @@ namespace Sah_Ai
                         var initialPieceOnNextMovePosition = _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column];
                         var piece = enemy.Item1;
                         _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = null;
-                        //doesMove
 
                         
                         _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = piece;
@@ -267,12 +245,9 @@ namespace Sah_Ai
                         piece.MyPosition = positionToMove;
                     enemy.Item1.Position = positionToMove;
                         value -= Minimax(depth - 1, _game.MyBlackPlayer);
-                    //doesMove
-
-                    //_game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column] = null;
+                  
                     _game.MyBoard.MyPieces[initialPosition.Row, initialPosition.Column] = _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column]; //piece;
                         _game.MyBoard.MyPieces[positionToMove.Row, positionToMove.Column] = initialPieceOnNextMovePosition;
-                     //_game.MyBoard.MyPieces[piece.MyPosition.Row, piece.MyPosition.Column].MyPosition = initialPosition;
                         piece.MyPosition = initialPosition;
                     enemy.Item1.Position = initialPosition;
 
@@ -313,8 +288,6 @@ namespace Sah_Ai
                     ChessSquare square = new ChessSquare(i, j);
                     if (_game.getPiece(square) != null && _game.MyBoard.MyPieces[i, j].color == player)
                     {
-                       // if (_game.MyBoard.MyPieces[i, j].color == player) { 
-                        // List<ChessSquare> potentialMoves = new List<ChessSquare>();
                         int[] move = _game.MyBoard.MyPieces[i, j].getOffsets(square, _game, _game.MyBoard.MyButtons);
                         if (move.Length == 0)
                             continue;
@@ -325,14 +298,12 @@ namespace Sah_Ai
                                 if (_game.MyBoard.MyButtons[k, n].BackColor == Color.Green || _game.MyBoard.MyButtons[k, n].BackColor == Color.Red)
                                 {
                                     ChessSquare potentialMove = new ChessSquare(k, n);
-                                    // potentialMoves.Add(potentialMove);
                                     allMoves.Add(new Tuple<Piece, ChessSquare, int[]>(_game.MyBoard.MyPieces[i, j], potentialMove, move));
                                 }
                             }
                         }
                         RefreshBoardAi(square.Row, square.Column, move);
-                        //allMoves.Add(new Tuple<Piece, List<ChessSquare>>(_game.MyBoard.MyPieces[i, j], potentialMoves ));
-                       // }
+                      
                     }
                 }
             }
